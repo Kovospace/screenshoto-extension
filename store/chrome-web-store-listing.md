@@ -11,7 +11,7 @@ tab by tab, plus the publishing steps. English only: the extension's UI is Engli
 | `privacy-policy.md` | privacy policy to link from the Privacy tab |
 | `materials/store-icon/icon-128.png` | store icon (96 px artwork, 16 px transparent padding) |
 | `materials/promo/small-promo-tile.png` | small promo tile 440×280, 24-bit; source `small-promo-tile.html` |
-| `materials/screenshots/` | **empty — screenshots are made by hand**, see section 1 |
+| `materials/screenshots/1-5.png` | screenshots, 1280×800, 24-bit (made by hand; see section 1) |
 | `render-graphics.mjs` | re-renders the promo tile and store icon: `node store/render-graphics.mjs` |
 | `screenshoto-web-<version>.zip` | the upload package (git-ignored): `npm run package:store` |
 
@@ -109,7 +109,7 @@ GOOD TO KNOW
 | Asset | Size | Status |
 |---|---|---|
 | Store icon | 128×128 PNG | ready: `store/materials/store-icon/icon-128.png` |
-| Screenshots | 1280×800 (or 640×400), 1–5, PNG/JPEG **without alpha** | **to do by hand** → `store/materials/screenshots/1.png` … |
+| Screenshots | 1280×800 (or 640×400), 1–5, PNG/JPEG **without alpha** | ready: `store/materials/screenshots/1-5.png` (24-bit, no alpha) |
 | Small promo tile | 440×280 | ready: `store/materials/promo/small-promo-tile.png` |
 | Marquee promo tile | 1400×560 | optional — skip; only used if Google features the extension |
 

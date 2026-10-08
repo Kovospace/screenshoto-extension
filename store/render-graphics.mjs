@@ -20,7 +20,7 @@ try {
   await page.goto(pathToFileURL(join(promoDir, 'small-promo-tile.html')).href, { waitUntil: 'load' });
   const png = join(promoDir, 'small-promo-tile.png');
   await page.screenshot({ path: png });
-  execFileSync('convert', [png, '-background', '#0c0d10', '-alpha', 'remove', '-alpha', 'off', `PNG24:${png}`]);
+  execFileSync('convert', [png, '-background', '#000000', '-alpha', 'remove', '-alpha', 'off', `PNG24:${png}`]);
   console.log(`wrote ${png}`);
 } finally {
   await browser.close();
