@@ -1,9 +1,9 @@
 ---
 name: verify-change
-description: Verify a change to ShotKit before calling it done — typecheck, unit tests, real-Chrome e2e, and for refactorings a byte-for-byte comparison of every user-observable outcome against a git ref. Use after any code change in this repo, and always when the change is meant to be behaviour-neutral (refactor, rename, restructure, dependency bump).
+description: Verify a change to Screenshoto Web before calling it done — typecheck, unit tests, real-Chrome e2e, and for refactorings a byte-for-byte comparison of every user-observable outcome against a git ref. Use after any code change in this repo, and always when the change is meant to be behaviour-neutral (refactor, rename, restructure, dependency bump).
 ---
 
-# Verify a ShotKit change
+# Verify a Screenshoto Web change
 
 Run in order; stop at the first failure and fix it (report test output faithfully).
 

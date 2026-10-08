@@ -61,7 +61,7 @@ async function start(): Promise<void> {
     textInputs: new TextAreaInputFactory(dom.wrap),
   });
 
-  document.title = `ShotKit — ${capture.title || hostOf(capture.url)}`;
+  document.title = `Screenshoto Web — ${capture.title || hostOf(capture.url)}`;
   toolbar.bind(editor, session);
   view.showColor(state.color);
   view.showSize(state.size);

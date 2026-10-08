@@ -1,13 +1,13 @@
 {
   "manifest_version": 3,
-  "name": "ShotKit",
-  "version": "1.0.0",
+  "name": "Screenshoto Web",
+  "version": "1.1.0",
   "description": "Capture a region or an element at true 1x–4x resolution, annotate it, save it. Nothing else.",
   "minimum_chrome_version": "116",
-  "permissions": ["activeTab", "scripting", "debugger", "downloads"],
+  "permissions": ["activeTab", "scripting", "debugger", "downloads", "contextMenus"],
   "background": { "service_worker": "background.js", "type": "module" },
   "action": {
-    "default_title": "ShotKit — capture region or element (Alt+Shift+S)",
+    "default_title": "Screenshoto Web — capture region or element (Alt+Shift+S)",
     "default_icon": { "16": "icons/16.png", "32": "icons/32.png", "48": "icons/48.png", "128": "icons/128.png" }
   },
   "icons": { "16": "icons/16.png", "32": "icons/32.png", "48": "icons/48.png", "128": "icons/128.png" },

@@ -6,7 +6,8 @@ import type { CaptureRepository } from './CaptureRepository';
  * its own instance; they meet in the same database.
  *
  * Database name, version and store name are the persisted format — changing them orphans every
- * stored capture. Keys are out-of-line (the capture id is not a field of the value).
+ * stored capture; the name predates the rename to Screenshoto Web and stays for that reason.
+ * Keys are out-of-line (the capture id is not a field of the value).
  */
 export class IndexedDbCaptureRepository implements CaptureRepository {
   static readonly DB_NAME = 'shotkit';

@@ -12,7 +12,7 @@ them under `test/`. Every file is under ~210 lines: read whole files, no ranges 
 | Annotation types (persisted shape) | `shared/model/Annotation.ts` |
 | `PageRect` / `ViewportRect` / `Point` | `shared/model/Geometry.ts` |
 | Picker → worker message | `shared/messaging/CaptureRequest.ts` |
-| `window.__shotkitPicker` / `__shotkitEl` typing | `shared/messaging/pageGlobals.ts` |
+| `window.__screenshotoPicker` / `__screenshotoEl` typing | `shared/messaging/pageGlobals.ts` |
 | Capture storage interface / IndexedDB impl | `shared/persistence/CaptureRepository.ts`, `IndexedDbCaptureRepository.ts` |
 | Manifest, permissions, Alt+Shift+S, icons | `../public/manifest.json`, `../public/icons/` |
 | Build (3 bundles + static copy), zip | `../scripts/build.mjs`, `../scripts/package.mjs` |
@@ -21,23 +21,25 @@ them under `test/`. Every file is under ~210 lines: read whole files, no ranges 
 
 | Concern | File |
 |---|---|
-| Wiring, `action.onClicked`, `runtime.onMessage`, blocked-page message | `background.ts` |
+| Wiring, `action.onClicked`, context menu clicks, `runtime.onMessage`, blocked-page message | `background.ts` |
+| Context menu entries "Capture area" / "Capture element" | `infrastructure/CaptureContextMenu.ts` |
 | Capture use case (scale loop, failed scales, element re-measure, save, open editor) | `application/CaptureService.ts` |
 | Port interfaces | `application/ports.ts` |
 | DPR re-render + screenshot via `chrome.debugger` / CDP, settle wait | `infrastructure/DebuggerPageRenderer.ts` |
 | Clip snapping, base64 → Blob | `infrastructure/clip.ts`, `infrastructure/base64.ts` |
 | Re-measuring the picked element in the page | `infrastructure/ScriptingElementLocator.ts` |
 | Badge `…` / red `!` + tooltip | `infrastructure/ActionBadgeIndicator.ts` |
-| Injecting the picker, opening the editor tab | `infrastructure/ScriptingPickerLauncher.ts`, `infrastructure/TabEditorLauncher.ts` |
+| Injecting the picker (with a requested mode), opening the editor tab | `infrastructure/ScriptingPickerLauncher.ts`, `infrastructure/TabEditorLauncher.ts` |
 
 ## Picker — `picker/`
 
 | Concern | File |
 |---|---|
-| Entry, toggle on re-injection | `picker.ts` |
+| Entry; toggle vs. open-in-mode on re-injection | `picker.ts`, `launchPicker.ts` |
 | Session: listeners, keys (Esc/R/E), finish → message | `PickerController.ts` |
-| Overlay DOM + CSS (closed shadow root), size label | `PickerOverlay.ts` |
-| Region drag (min 4 px) / element hover, ↑↓, Enter | `modes/RegionMode.ts`, `modes/ElementMode.ts`, interface `modes/SelectionMode.ts` |
+| Overlay DOM + CSS (closed shadow root), size label, handles, 📷 button | `PickerOverlay.ts` |
+| Region: drag (min 4 px), then adjust and confirm (📷 / Enter) | `modes/RegionMode.ts`; handle/resize/move geometry `regionAdjust.ts` |
+| Element hover, ↑↓, click/Enter | `modes/ElementMode.ts`; interface `modes/SelectionMode.ts` |
 | Parent/child walk | `ElementTrail.ts` |
 
 ## Editor — `editor/`
@@ -50,7 +52,7 @@ them under `test/`. Every file is under ~210 lines: read whole files, no ranges 
 | All commands; undo/redraw/save/refresh choreography | `application/Editor.ts` (`EditorCommands.ts` = UI-facing interface) |
 | Port interfaces (view, text input, downloader, clipboard, exporter, autosaver) | `application/ports.ts` |
 | Save / Save all / Copy + toasts | `application/ExportService.ts` |
-| Download file name `ShotKit/<host>_<time>@Nx.png` | `application/fileName.ts` |
+| Download file name `Screenshoto Web/<host>_<time>@Nx.png` | `application/fileName.ts` |
 | Debounced write-back of annotations + last scale | `application/DebouncedAutosaver.ts` |
 | Text box commit/cancel/empty rules | `application/TextEditSession.ts` |
 | Shapes: draw, bounds, hit-test, handles, size | `domain/shapes/*Shape.ts`, `ShapeBehavior.ts`, `ShapeRegistry.ts` |

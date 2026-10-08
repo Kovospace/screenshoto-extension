@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-ShotKit: a Chrome MV3 extension that captures a page region or element at **true** 1×–4×
+Screenshoto Web: a Chrome MV3 extension that captures a page region or element at **true** 1×–4×
 (re-rendered through the DevTools protocol, not upscaled), lets you annotate it, and saves or
 copies it. TypeScript, no framework, no runtime dependencies, no network requests.
 
@@ -17,7 +17,7 @@ npm run watch        # rebuild TS on change (static files are copied once); relo
 npm test             # unit tests (Vitest, jsdom) — fast, run after every change
 npm run test:e2e     # build + drive the real extension in headless Chrome for Testing (~40 s)
 npm run typecheck
-npm run package      # build + shotkit.zip (folder "shotkit", no source maps)
+npm run package      # build + screenshoto-web.zip (folder "screenshoto-web", no source maps)
 ```
 
 ## Architecture
@@ -28,9 +28,9 @@ Three extension contexts, each with its own entry point and composition root; th
 through interfaces (`ports.ts`) so the core is unit-testable without Chrome or a DOM.
 
 ```
-toolbar click ──► background (service worker)
+toolbar click / context menu ──► background (service worker)
                    ├─ injects picker.js into the tab ──► picker (content script, classic IIFE)
-                   │                                      user drags a region / picks an element
+                   │                                      user drags + adjusts a region (📷/Enter) / picks an element
                    │◄──────── CaptureRequest message ─────┘
                    ├─ CaptureService: debugger re-renders the tab at DPR 1..4, screenshots each
                    ├─ saves Capture to IndexedDB (shared/persistence)
@@ -42,7 +42,7 @@ toolbar click ──► background (service worker)
 | Context | Entry (composition root) | Core | Adapters |
 |---|---|---|---|
 | Service worker | `src/background/background.ts` | `application/CaptureService.ts` + `application/ports.ts` | `infrastructure/*` (debugger, scripting, action badge, tabs) |
-| Picker | `src/picker/picker.ts` | `PickerController.ts`, `modes/*`, `ElementTrail.ts` | `PickerOverlay.ts` (shadow-DOM view) |
+| Picker | `src/picker/picker.ts` → `launchPicker.ts` | `PickerController.ts`, `modes/*`, `regionAdjust.ts`, `ElementTrail.ts` | `PickerOverlay.ts` (shadow-DOM view) |
 | Editor | `src/editor/editor.ts` | `application/Editor.ts` (+ `ports.ts`), `interaction/*`, `model/*`, `domain/*` | `ui/*` (DOM), `infrastructure/*` (Chrome, canvas), `rendering/*` |
 
 ### Design patterns (Java names, so you can find your way)
@@ -70,10 +70,13 @@ Rule inside `Editor` for every mutation: **record undo *before* changing → red
 - **Annotation geometry is in 1× CSS px**, rendered at any scale by `ctx.setTransform(f…)`
   where `f = image px / 1× px`. Pointer tolerances are screen px divided by `state.zoom`.
 - **`picker.js` must stay a self-contained classic script** (esbuild `format: 'iife'`). It is
-  injected with `executeScript({ files })`; re-injecting it toggles (cancels) an open picker.
+  injected with `executeScript({ files })`. Re-injected from the toolbar it toggles (cancels) an
+  open picker; from the context menu the worker first sets `window.__screenshotoRequestedMode`
+  and the picker opens in, or switches to, that mode (`launchPicker.ts`).
+- **The IndexedDB name stays `shotkit`** (the extension's former name) — renaming orphans captures.
 - **Functions passed to `executeScript({ func })` are serialised**: no imports, no closures —
   see `ScriptingElementLocator.measurePickedElement`. Page globals are typed in
-  `shared/messaging/pageGlobals.ts` (`__shotkitPicker`, `__shotkitEl`).
+  `shared/messaging/pageGlobals.ts` (`__screenshotoPicker`, `__screenshotoEl`).
 - **The worker keeps no state between events** (MV3 kills idle workers).
 - Every user-visible string (toasts, fatal messages, tooltips, the README key table) is
   behaviour. The e2e test asserts many of them.

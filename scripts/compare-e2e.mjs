@@ -20,7 +20,7 @@ if (!ref) {
 const root = resolve('.');
 const run = (cmd, args, cwd = root) => execFileSync(cmd, args, { cwd, stdio: 'inherit' });
 
-const work = await mkdtemp(join(tmpdir(), 'shotkit-compare-'));
+const work = await mkdtemp(join(tmpdir(), 'screenshoto-compare-'));
 const tree = join(work, 'tree');
 try {
   run('git', ['worktree', 'add', '--detach', tree, ref]);

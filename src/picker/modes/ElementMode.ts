@@ -43,6 +43,10 @@ export class ElementMode implements SelectionMode {
     }
   }
 
+  confirm(): void {
+    this.pick();
+  }
+
   private highlight(): void {
     const el = this.trail.element;
     if (el) this.picker.showBox(el.getBoundingClientRect(), true);

@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { PickerController } from '../../src/picker/PickerController';
 import type { CaptureRequest } from '../../src/shared/messaging/CaptureRequest';
 
-const host = () => document.querySelector('shotkit-picker') as HTMLElement | null;
+const host = () => document.querySelector('screenshoto-picker') as HTMLElement | null;
 const mouse = (type: string, x: number, y: number, button = 0) =>
   host()!.dispatchEvent(new MouseEvent(type, { clientX: x, clientY: y, button, bubbles: true, cancelable: true }));
 const key = (k: string) => {
@@ -20,23 +20,34 @@ describe('PickerController', () => {
     vi.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => { cb(0); return 0; });
     new PickerController(r => sent.push(r)).start();
   });
-  afterEach(() => { window.__shotkitPicker?.cancel(); delete window.__shotkitEl; });
+  afterEach(() => {
+    window.__screenshotoPicker?.cancel();
+    delete window.__screenshotoEl;
+    Object.assign(window, { scrollX: 0, scrollY: 0 });
+  });
 
   it('mounts an overlay and registers itself for toggling', () => {
     expect(host()).not.toBeNull();
-    expect(window.__shotkitPicker).toBeDefined();
+    expect(window.__screenshotoPicker).toBeDefined();
   });
 
-  it('sends a dragged region in page coordinates, then closes', () => {
+  it('keeps a dragged region open for adjusting; Enter sends it in page coordinates and closes', () => {
     Object.assign(window, { scrollX: 5, scrollY: 100 });
     mouse('mousedown', 50, 40);
     mouse('mousemove', 20, 10);
     mouse('mouseup', 20, 10);
-    expect(sent).toEqual([{ type: 'shotkit:capture', rect: { x: 25, y: 110, width: 30, height: 30 }, element: false }]);
-    expect(window.__shotkitEl).toBeNull();
+    expect(sent).toEqual([]);
+    expect(host()).not.toBeNull();
+    expect(key('Enter').defaultPrevented).toBe(true);
+    expect(sent).toEqual([{ type: 'screenshoto:capture', rect: { x: 25, y: 110, width: 30, height: 30 }, element: false }]);
+    expect(window.__screenshotoEl).toBeNull();
     expect(host()).toBeNull();
-    expect(window.__shotkitPicker).toBeUndefined();
-    Object.assign(window, { scrollX: 0, scrollY: 0 });
+    expect(window.__screenshotoPicker).toBeUndefined();
+  });
+
+  it('switches mode when asked by an open picker handle (context menu)', () => {
+    window.__screenshotoPicker!.setMode('element');
+    expect(key('ArrowUp').defaultPrevented).toBe(true); // only element mode consumes ↑
   });
 
   it('ignores drags smaller than 4 px and right-button presses', () => {
@@ -67,8 +78,8 @@ describe('PickerController', () => {
     key('e');
     mouse('mousemove', 5, 5);
     key('Enter');
-    expect(sent).toEqual([{ type: 'shotkit:capture', rect: { x: 1, y: 2, width: 30, height: 40 }, element: true }]);
-    expect(window.__shotkitEl).toBe(card);
+    expect(sent).toEqual([{ type: 'screenshoto:capture', rect: { x: 1, y: 2, width: 30, height: 40 }, element: true }]);
+    expect(window.__screenshotoEl).toBe(card);
   });
 
   it('element mode consumes ↑/↓ even when there is nowhere to go', () => {

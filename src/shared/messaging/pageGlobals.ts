@@ -7,11 +7,16 @@
  */
 export {};
 
+/** How the picker selects: drag a region, or pick an element. */
+export type PickerMode = 'region' | 'element';
+
 declare global {
   interface Window {
-    /** Present while a picker overlay is open; injecting the picker again cancels it. */
-    __shotkitPicker?: { cancel(): void };
+    /** Present while a picker overlay is open (see picker/launchPicker.ts). */
+    __screenshotoPicker?: { cancel(): void; setMode(mode: PickerMode): void };
+    /** Set by the worker just before injecting the picker: the mode to start in (context menu). */
+    __screenshotoRequestedMode?: PickerMode;
     /** The element the user picked, if any — re-measured by the worker at each scale. */
-    __shotkitEl?: Element | null;
+    __screenshotoEl?: Element | null;
   }
 }

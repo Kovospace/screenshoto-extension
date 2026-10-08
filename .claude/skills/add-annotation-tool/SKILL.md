@@ -1,6 +1,6 @@
 ---
 name: add-annotation-tool
-description: Checklist for adding a new annotation shape/tool to the ShotKit editor (e.g. highlighter, blur, line), or changing how an existing shape draws, hit-tests or resizes. Use whenever a task touches annotation types, editor tools or their shortcuts.
+description: Checklist for adding a new annotation shape/tool to the Screenshoto Web editor (e.g. highlighter, blur, line), or changing how an existing shape draws, hit-tests or resizes. Use whenever a task touches annotation types, editor tools or their shortcuts.
 ---
 
 # Adding an annotation tool

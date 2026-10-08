@@ -1,12 +1,7 @@
 /*
- * Injected into the page when the toolbar button is pressed (bundled as a classic script).
- * Injected again while open, it cancels the open picker — the button toggles.
+ * Injected into the page by the service worker (bundled as a classic script) — from the toolbar
+ * button, the keyboard shortcut or the context menu. See launchPicker for what it does.
  */
-import '../shared/messaging/pageGlobals';
-import { PickerController } from './PickerController';
+import { launchPicker } from './launchPicker';
 
-if (window.__shotkitPicker) {
-  window.__shotkitPicker.cancel();
-} else {
-  new PickerController(request => chrome.runtime.sendMessage(request)).start();
-}
+launchPicker(request => chrome.runtime.sendMessage(request));

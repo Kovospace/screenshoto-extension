@@ -44,7 +44,7 @@ export const AUTOSAVE_DELAY_MS = 300;
 export const TOAST_VISIBLE_MS = 2200;
 /** Object URLs handed to chrome.downloads stay valid this long. */
 export const DOWNLOAD_URL_LIFETIME_MS = 60_000;
-export const DOWNLOAD_FOLDER = 'ShotKit';
+export const DOWNLOAD_FOLDER = 'Screenshoto Web';
 
 /** Screen-pixel distances; divided by the view zoom so they feel the same at any zoom. */
 export const POINTER = {

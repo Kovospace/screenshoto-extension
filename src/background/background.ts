@@ -6,14 +6,16 @@ import { isCaptureRequest } from '../shared/messaging/CaptureRequest';
 import { IndexedDbCaptureRepository } from '../shared/persistence/IndexedDbCaptureRepository';
 import { CaptureService } from './application/CaptureService';
 import type { SourceTab } from './application/ports';
+import type { PickerMode } from '../shared/messaging/pageGlobals';
 import { ActionBadgeIndicator } from './infrastructure/ActionBadgeIndicator';
+import { CaptureContextMenu } from './infrastructure/CaptureContextMenu';
 import { DebuggerPageRenderer } from './infrastructure/DebuggerPageRenderer';
 import { ScriptingElementLocator } from './infrastructure/ScriptingElementLocator';
 import { ScriptingPickerLauncher } from './infrastructure/ScriptingPickerLauncher';
 import { TabEditorLauncher } from './infrastructure/TabEditorLauncher';
 
 const BLOCKED_PAGE_MESSAGE =
-  'ShotKit can’t run here: Chrome blocks all extensions on chrome:// pages, the built-in New Tab page and the Web Store.';
+  'Screenshoto Web can’t run here: Chrome blocks all extensions on chrome:// pages, the built-in New Tab page and the Web Store.';
 
 const indicator = new ActionBadgeIndicator(chrome.runtime.getManifest().action!.default_title!);
 const picker = new ScriptingPickerLauncher();
@@ -25,13 +27,21 @@ const captures = new CaptureService({
   editor: new TabEditorLauncher(),
 });
 
-chrome.action.onClicked.addListener(async tab => {
-  if (!tab.id) return;
+async function startPicker(tabId: number | undefined, mode?: PickerMode): Promise<void> {
+  if (!tabId) return;
   try {
-    await picker.launch(tab.id);
+    await picker.launch(tabId, mode);
   } catch {
-    indicator.showError(tab.id, BLOCKED_PAGE_MESSAGE);
+    indicator.showError(tabId, BLOCKED_PAGE_MESSAGE);
   }
+}
+
+chrome.action.onClicked.addListener(tab => startPicker(tab.id));
+
+chrome.runtime.onInstalled.addListener(() => CaptureContextMenu.register());
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  const mode = CaptureContextMenu.modeFor(info.menuItemId);
+  if (mode) startPicker(tab?.id, mode);
 });
 
 chrome.runtime.onMessage.addListener((msg, sender) => {

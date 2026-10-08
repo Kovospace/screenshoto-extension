@@ -9,7 +9,7 @@ export function hostOf(url: string | undefined): string {
   }
 }
 
-/** `ShotKit/<host>_<YYYY-MM-DD_HH-MM-SS>@<scale>x.png`, from the capture's local time. */
+/** `Screenshoto Web/<host>_<YYYY-MM-DD_HH-MM-SS>@<scale>x.png`, from the capture's local time. */
 export function exportFileName(capture: Pick<Capture, 'time' | 'url'>, scale: Scale, now = Date.now()): string {
   const d = new Date(capture.time || now);
   const p = (n: number) => String(n).padStart(2, '0');

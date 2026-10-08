@@ -21,15 +21,15 @@ describe('ExportService', () => {
   it('saves one file per scale and reports the count', async () => {
     const { service, toasts, downloads } = setup();
     await service.save([1, 2, 3, 4], true);
-    expect(downloads).toEqual([1, 2, 3, 4].map(s => [`ShotKit/www.example.com_2026-01-02_03-04-05@${s}x.png`, false]));
-    expect(toasts).toEqual(['Saved 4 files to Downloads/ShotKit']);
+    expect(downloads).toEqual([1, 2, 3, 4].map(s => [`Screenshoto Web/www.example.com_2026-01-02_03-04-05@${s}x.png`, false]));
+    expect(toasts).toEqual(['Saved 4 files to Downloads/Screenshoto Web']);
   });
 
   it('honours "save as" for a single file', async () => {
     const { service, toasts, downloads } = setup();
     await service.save([3], true);
     expect(downloads[0][1]).toBe(true);
-    expect(toasts).toEqual(['Saved 3× to Downloads/ShotKit']);
+    expect(toasts).toEqual(['Saved 3× to Downloads/Screenshoto Web']);
   });
 
   it('stays quiet when the user cancels the dialog, and reports real failures', async () => {
@@ -40,7 +40,7 @@ describe('ExportService', () => {
     const failing = setup(async name => { if (name.includes('@2x')) throw new Error('disk full'); });
     await failing.service.save([1, 2], false);
     // One file saved: the toast names the first *requested* scale (original behaviour, kept as-is).
-    expect(failing.toasts).toEqual(['Save failed: disk full', 'Saved 1× to Downloads/ShotKit']);
+    expect(failing.toasts).toEqual(['Save failed: disk full', 'Saved 1× to Downloads/Screenshoto Web']);
   });
 
   it('copies and reports the outcome', async () => {

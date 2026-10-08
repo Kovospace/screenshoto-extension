@@ -28,7 +28,7 @@ const pageUrl = `http://127.0.0.1:${server.address().port}/`;
 
 // A throwaway profile whose download folder is a temp dir: chrome.downloads keeps the extension's
 // file names there (CDP's Browser.setDownloadBehavior would rename every file to a GUID).
-const work = await mkdtemp(join(tmpdir(), 'shotkit-e2e-'));
+const work = await mkdtemp(join(tmpdir(), 'screenshoto-e2e-'));
 const downloads = join(work, 'downloads');
 await mkdir(join(work, 'profile', 'Default'), { recursive: true });
 await writeFile(join(work, 'profile', 'Default', 'Preferences'),
@@ -62,7 +62,7 @@ try {
     await page.goto(pageUrl, { waitUntil: 'load' });
     return page;
   };
-  const pickerOpen = page => page.evaluate(() => !!document.querySelector('shotkit-picker'));
+  const pickerOpen = page => page.evaluate(() => !!document.querySelector('screenshoto-picker'));
   const waitForEditor = async () => {
     const target = await browser.waitForTarget(t => t.url().includes('/editor.html#'), { timeout: 20000 });
     const page = await target.page();
@@ -115,7 +115,7 @@ try {
     return { images, failed: cap.failed, rect: round(cap.rect), url: cap.url, title: cap.title, annotations: round(cap.annotations), lastScale: cap.lastScale };
   });
   const savedFiles = async (expected, timeout = 10000) => {
-    const dir = join(downloads, 'ShotKit');
+    const dir = join(downloads, 'Screenshoto Web');
     for (const end = Date.now() + timeout; Date.now() < end; await sleep(100)) {
       const names = (await readdir(dir).catch(() => [])).filter(n => n.endsWith('.png'));
       if (names.length >= expected) {
@@ -133,23 +133,31 @@ try {
   await step('picker: toolbar button opens it, pressing again closes it', async () => {
     const page = await openFixture();
     await page.triggerExtensionAction(extension);
-    await page.waitForSelector('shotkit-picker');
+    await page.waitForSelector('screenshoto-picker');
     await page.triggerExtensionAction(extension);
-    await page.waitForFunction(() => !document.querySelector('shotkit-picker'));
+    await page.waitForFunction(() => !document.querySelector('screenshoto-picker'));
     await page.triggerExtensionAction(extension);
-    await page.waitForSelector('shotkit-picker');
+    await page.waitForSelector('screenshoto-picker');
     await page.keyboard.press('Escape');
     const afterEscape = await pickerOpen(page);
     assert.equal(afterEscape, false, 'Esc cancels');
     // A tiny drag (< 4 px) is ignored and the picker stays open.
     await page.triggerExtensionAction(extension);
-    await page.waitForSelector('shotkit-picker');
+    await page.waitForSelector('screenshoto-picker');
     await page.mouse.move(100, 100); await page.mouse.down(); await page.mouse.move(102, 102); await page.mouse.up();
     await sleep(300);
     const afterTinyDrag = await pickerOpen(page);
     assert.equal(afterTinyDrag, true, 'tiny drag ignored');
+    // A finished rectangle waits for confirmation; Enter captures it.
+    await page.mouse.move(200, 150); await page.mouse.down(); await page.mouse.move(300, 250, { steps: 4 }); await page.mouse.up();
+    await page.mouse.move(250, 200); await page.mouse.down(); await page.mouse.move(270, 230, { steps: 4 }); await page.mouse.up(); // move it
+    await page.keyboard.press('Enter');
+    const ed = await waitForEditor();
+    const moved = (await storedCapture(ed)).rect;
+    assert.deepEqual(moved, { x: 220, y: 180, width: 100, height: 100 });
+    await ed.close();
     await page.close();
-    return { afterEscape, afterTinyDrag };
+    return { afterEscape, afterTinyDrag, moved };
   });
 
   // ---------- region capture + editing ----------
@@ -158,8 +166,14 @@ try {
     const page = await openFixture();
     await page.evaluate(() => scrollTo(0, 40));
     await page.triggerExtensionAction(extension);
-    await page.waitForSelector('shotkit-picker');
-    await page.mouse.move(60, 30); await page.mouse.down(); await page.mouse.move(460, 330, { steps: 6 }); await page.mouse.up();
+    await page.waitForSelector('screenshoto-picker');
+    await page.mouse.move(60, 30); await page.mouse.down(); await page.mouse.move(470, 345, { steps: 6 }); await page.mouse.up();
+    await sleep(400);
+    assert.equal(await pickerOpen(page), true, 'a finished rectangle is offered for adjusting, not captured');
+    // Resize with the bottom-right handle back to 400×300, then press the camera button
+    // (right-aligned under the box; the overlay's shadow root is closed, so click by position).
+    await page.mouse.move(470, 345); await page.mouse.down(); await page.mouse.move(460, 330, { steps: 4 }); await page.mouse.up();
+    await page.mouse.click(440, 351);
     editor = await waitForEditor();
     await editor.bringToFront();
     const state = await ui(editor);
@@ -168,7 +182,7 @@ try {
     assert.deepEqual(state.tool, ['arrow']);
     assert.deepEqual(state.size, ['M']);
     assert.deepEqual(state.color, ['#e5243b']);
-    assert.match(state.title, /^ShotKit — ShotKit fixture$/);
+    assert.match(state.title, /^Screenshoto Web — Screenshoto Web fixture$/);
     assert.equal(state.undo || state.redo || state.del, false);
     const stored = await storedCapture(editor);
     assert.deepEqual(Object.keys(stored.images), ['1', '2', '3', '4']);
@@ -282,7 +296,7 @@ try {
     assert.deepEqual(Object.keys(files), ['<host_time>@1x.png', '<host_time>@2x.png', '<host_time>@3x.png', '<host_time>@4x.png']);
     await sleep(100);
     const state = await ui(editor);
-    assert.equal(state.toast, 'Saved 4 files to Downloads/ShotKit');
+    assert.equal(state.toast, 'Saved 4 files to Downloads/Screenshoto Web');
     return { files, toast: state.toast };
   });
 
@@ -290,7 +304,7 @@ try {
     await editor.keyboard.down('Control'); await editor.keyboard.press('s'); await editor.keyboard.up('Control');
     const files = await savedFiles(1);
     const state = await ui(editor);
-    assert.equal(state.toast, 'Saved 3× to Downloads/ShotKit');
+    assert.equal(state.toast, 'Saved 3× to Downloads/Screenshoto Web');
     return { files, toast: state.toast };
   });
 
@@ -307,7 +321,7 @@ try {
   await step('element capture: hover, ↑ parent, ↓ child, Enter', async () => {
     const page = await openFixture();
     await page.triggerExtensionAction(extension);
-    await page.waitForSelector('shotkit-picker');
+    await page.waitForSelector('screenshoto-picker');
     await page.keyboard.press('e');
     const leaf = await page.$eval('#leaf', el => { const r = el.getBoundingClientRect(); return { x: r.left + 5, y: r.top + 5 }; });
     await page.mouse.move(leaf.x, leaf.y);
@@ -331,8 +345,8 @@ try {
   await step('element capture by click, after switching modes with the toolbar', async () => {
     const page = await openFixture();
     await page.triggerExtensionAction(extension);
-    await page.waitForSelector('shotkit-picker');
-    const handle = await page.evaluateHandle(() => document.querySelector('shotkit-picker'));
+    await page.waitForSelector('screenshoto-picker');
+    const handle = await page.evaluateHandle(() => document.querySelector('screenshoto-picker'));
     // The overlay's shadow root is closed: switch with keys, which the toolbar mirrors.
     await page.keyboard.press('e'); await page.keyboard.press('r'); await page.keyboard.press('E');
     await handle.dispose();

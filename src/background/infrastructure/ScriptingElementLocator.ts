@@ -15,7 +15,7 @@ export class ScriptingElementLocator implements PickedElementLocator {
 
 /** Runs in the page (serialised — must not reference anything outside its own body). */
 function measurePickedElement(): PageRect | null {
-  const el = window.__shotkitEl;
+  const el = window.__screenshotoEl;
   if (!el || !el.isConnected) return null;
   const r = el.getBoundingClientRect();
   return { x: r.left + scrollX, y: r.top + scrollY, width: r.width, height: r.height };

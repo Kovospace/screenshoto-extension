@@ -1,8 +1,8 @@
 {
-  "name": "shotkit",
-  "version": "1.0.0",
+  "name": "screenshoto-web",
+  "version": "1.1.0",
   "private": true,
-  "description": "ShotKit — capture a region or an element at true 1x–4x resolution, annotate it, save it.",
+  "description": "Screenshoto Web — capture a region or an element at true 1x–4x resolution, annotate it, save it.",
   "type": "module",
   "scripts": {
     "build": "npm run typecheck && node scripts/build.mjs",

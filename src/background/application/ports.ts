@@ -3,6 +3,7 @@
  * ../infrastructure, and with fakes in the tests.
  */
 import type { CaptureId, Scale } from '../../shared/model/Capture';
+import type { PickerMode } from '../../shared/messaging/pageGlobals';
 import type { PageRect } from '../../shared/model/Geometry';
 
 /** The tab a capture comes from (the subset of chrome.tabs.Tab the use case reads). */
@@ -29,7 +30,7 @@ export interface RenderSession {
   detach(): Promise<void>;
 }
 
-/** Re-measures the element the user picked (`window.__shotkitEl`) in the given tab. */
+/** Re-measures the element the user picked (`window.__screenshotoEl`) in the given tab. */
 export interface PickedElementLocator {
   /** Its current rect in page CSS pixels, or null if it is gone, empty, or unreachable. */
   locate(tabId: number): Promise<PageRect | null>;
@@ -50,5 +51,6 @@ export interface EditorLauncher {
 
 /** Starts the region/element picker in a tab. Rejects if Chrome forbids scripting the page. */
 export interface PickerLauncher {
-  launch(tabId: number): Promise<void>;
+  /** Without `mode`: toggle the picker. With `mode`: open it (or switch it) to that mode. */
+  launch(tabId: number, mode?: PickerMode): Promise<void>;
 }

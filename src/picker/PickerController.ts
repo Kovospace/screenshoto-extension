@@ -26,8 +26,12 @@ export class PickerController implements PickerContext {
     this.overlay = new PickerOverlay(win.document);
   }
 
-  start(): void {
-    this.overlay.bind({ onModeButton: m => this.setMode(m), onCancelButton: () => this.cancel() });
+  start(mode: SelectionModeName = 'region'): void {
+    this.overlay.bind({
+      onModeButton: m => this.setMode(m),
+      onCancelButton: () => this.cancel(),
+      onCameraButton: () => this.mode.confirm(),
+    });
     const host = this.overlay.host;
     host.addEventListener('mousedown', e => {
       if (e.button !== 0) return;
@@ -40,8 +44,8 @@ export class PickerController implements PickerContext {
     this.win.addEventListener('keydown', this.onKey, true);
     this.win.addEventListener('scroll', this.onScroll, true);
 
-    this.win.__shotkitPicker = { cancel: () => this.cancel() };
-    this.setMode('region');
+    this.win.__screenshotoPicker = { cancel: () => this.cancel(), setMode: m => this.setMode(m) };
+    this.setMode(mode);
     this.overlay.mount();
   }
 
@@ -55,7 +59,7 @@ export class PickerController implements PickerContext {
     this.win.removeEventListener('keydown', this.onKey, true);
     this.win.removeEventListener('scroll', this.onScroll, true);
     this.overlay.remove();
-    delete this.win.__shotkitPicker;
+    delete this.win.__screenshotoPicker;
   }
 
   // ---- PickerContext ----
@@ -64,8 +68,24 @@ export class PickerController implements PickerContext {
     this.overlay.showBox(rect, isElement);
   }
 
+  showAdjustableBox(rect: ViewportRect): void {
+    this.overlay.showAdjustableBox(rect);
+  }
+
   hideBox(): void {
     this.overlay.hideBox();
+  }
+
+  setHint(text: string): void {
+    this.overlay.setHint(text);
+  }
+
+  setCursor(cursor: string): void {
+    this.overlay.setCursor(cursor);
+  }
+
+  viewportSize(): { width: number; height: number } {
+    return { width: this.win.innerWidth, height: this.win.innerHeight };
   }
 
   elementAt(x: number, y: number): Element | null {
@@ -75,11 +95,11 @@ export class PickerController implements PickerContext {
   finish(r: ViewportRect, element: Element | null): void {
     if (r.width < 1 || r.height < 1) return;
     const rect = toPageRect(r, { x: this.win.scrollX, y: this.win.scrollY });
-    this.win.__shotkitEl = element || null;
+    this.win.__screenshotoEl = element || null;
     this.cancel();
     // Let the overlay disappear from the rendered frame before capturing.
     this.win.requestAnimationFrame(() => this.win.requestAnimationFrame(() =>
-      this.send({ type: 'shotkit:capture', rect, element: !!element })));
+      this.send({ type: 'screenshoto:capture', rect, element: !!element })));
   }
 
   // ---- page listeners ----
