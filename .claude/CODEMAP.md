@@ -15,7 +15,8 @@ them under `test/`. Every file is under ~210 lines: read whole files, no ranges 
 | `window.__screenshotoPicker` / `__screenshotoEl` typing | `shared/messaging/pageGlobals.ts` |
 | Capture storage interface / IndexedDB impl | `shared/persistence/CaptureRepository.ts`, `IndexedDbCaptureRepository.ts` |
 | Manifest, permissions, Alt+Shift+S, icons | `../public/manifest.json`, `../public/icons/` |
-| Build (3 bundles + static copy), zip | `../scripts/build.mjs`, `../scripts/package.mjs` |
+| Build (3 bundles + static copy; `--release` = no source maps), zips | `../scripts/build.mjs`, `../scripts/package.mjs` |
+| Chrome Web Store: listing texts, permission justifications, publishing steps, privacy policy, graphics | `../store/chrome-web-store-listing.md`, `../store/privacy-policy.md`, `../store/materials/`, `../store/render-graphics.mjs` |
 
 ## Service worker — `background/`
 

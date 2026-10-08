@@ -17,7 +17,8 @@ npm run watch        # rebuild TS on change (static files are copied once); relo
 npm test             # unit tests (Vitest, jsdom) — fast, run after every change
 npm run test:e2e     # build + drive the real extension in headless Chrome for Testing (~40 s)
 npm run typecheck
-npm run package      # build + screenshoto-web.zip (folder "screenshoto-web", no source maps)
+npm run package      # release build + screenshoto-web.zip (folder "screenshoto-web", for Load unpacked)
+npm run package:store  # release build + store/screenshoto-web-<version>.zip (manifest at zip root)
 ```
 
 ## Architecture

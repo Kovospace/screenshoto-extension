@@ -6,13 +6,15 @@
 //
 //   node scripts/build.mjs           one-off build
 //   node scripts/build.mjs --watch   rebuild on change (reload the extension in chrome://extensions)
+//   node scripts/build.mjs --release no source maps (what gets packaged)
 import * as esbuild from 'esbuild';
 import { cp, mkdir, rm } from 'node:fs/promises';
 
 const watch = process.argv.includes('--watch');
+const release = process.argv.includes('--release');
 const outdir = 'dist';
 
-const common = { bundle: true, target: 'chrome116', sourcemap: 'linked', logLevel: 'info', legalComments: 'none' };
+const common = { bundle: true, target: 'chrome116', sourcemap: release ? false : 'linked', logLevel: 'info', legalComments: 'none' };
 
 /** @type {esbuild.BuildOptions[]} */
 const entries = [

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Screenshoto Web",
   "version": "1.1.0",
-  "description": "Capture a region or an element at true 1x–4x resolution, annotate it, save it. Nothing else.",
+  "description": "Capture a region or element at true 1×–4× retina resolution, annotate it, save it. Simple, fast and free.",
   "minimum_chrome_version": "116",
   "permissions": ["activeTab", "scripting", "debugger", "downloads", "contextMenus"],
   "background": { "service_worker": "background.js", "type": "module" },

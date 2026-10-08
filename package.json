@@ -2,7 +2,7 @@
   "name": "screenshoto-web",
   "version": "1.1.0",
   "private": true,
-  "description": "Screenshoto Web — capture a region or an element at true 1x–4x resolution, annotate it, save it.",
+  "description": "Capture a region or element at true 1×–4× retina resolution, annotate it, save it. Simple, fast and free.",
   "type": "module",
   "scripts": {
     "build": "npm run typecheck && node scripts/build.mjs",
@@ -11,8 +11,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "npm run build && node test-e2e/run.mjs",
-    "package": "npm run build && node scripts/package.mjs",
-    "compare": "node scripts/compare-e2e.mjs"
+    "package": "npm run typecheck && node scripts/build.mjs --release && node scripts/package.mjs",
+    "compare": "node scripts/compare-e2e.mjs",
+    "package:store": "npm run typecheck && node scripts/build.mjs --release && node scripts/package.mjs --store"
   },
   "devDependencies": {
     "@types/chrome": "^0.3.4",
