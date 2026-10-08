@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ShotKit</title>
+<link rel="stylesheet" href="editor.css">
+</head>
+<body>
+<header class="bar">
+  <div class="group seg" id="scales">
+    <button data-scale="1" title="1× (key 1)">1×</button>
+    <button data-scale="2" title="2× (key 2)">2×</button>
+    <button data-scale="3" title="3× (key 3)">3×</button>
+    <button data-scale="4" title="4× (key 4)">4×</button>
+  </div>
+  <div class="sep"></div>
+  <div class="group" id="tools">
+    <button data-tool="select" title="Select / move (V)"><svg viewBox="0 0 24 24"><path d="M6 3l12 9-5.5 1.2L15 19l-2.4 1.1-2.5-5.8L6 18z"/></svg></button>
+    <button data-tool="rect" title="Rectangle (R) — Shift for square"><svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="1.5"/></svg></button>
+    <button data-tool="ellipse" title="Circle / ellipse (O) — Shift for circle"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="8.5" ry="6.5"/></svg></button>
+    <button data-tool="arrow" title="Arrow (A) — Shift snaps to 45°"><svg viewBox="0 0 24 24"><path d="M5 19L18 6M10 6h8v8"/></svg></button>
+    <button data-tool="text" title="Text (T) — Enter to finish, Shift+Enter new line"><svg viewBox="0 0 24 24"><path d="M5 7V5h14v2M12 5v14M9 19h6"/></svg></button>
+    <button data-tool="step" title="Numbered step marker (N)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M10.5 9.5l2-1.5v8"/></svg></button>
+  </div>
+  <div class="sep"></div>
+  <div class="group" id="colors"></div>
+  <div class="group seg" id="sizes">
+    <button data-size="S" title="Thin / small">S</button>
+    <button data-size="M" title="Medium">M</button>
+    <button data-size="L" title="Thick / large">L</button>
+  </div>
+  <div class="sep"></div>
+  <div class="group">
+    <button id="undo" title="Undo (Ctrl+Z)"><svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5M4 9h10.5a5.5 5.5 0 010 11H11"/></svg></button>
+    <button id="redo" title="Redo (Ctrl+Shift+Z)"><svg viewBox="0 0 24 24"><path d="M15 14l5-5-5-5M20 9H9.5a5.5 5.5 0 000 11H13"/></svg></button>
+    <button id="del" title="Delete selected (Del)"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>
+  </div>
+  <div class="spacer"></div>
+  <span id="info"></span>
+  <div class="group">
+    <button id="copy" class="text" title="Copy current scale to clipboard (Ctrl+C)">Copy</button>
+    <button id="save" class="text primary" title="Save current scale (Ctrl+S) — Shift-click to choose location">Save</button>
+    <button id="saveAll" class="text" title="Save 1×, 2×, 3× and 4× files">Save all</button>
+  </div>
+</header>
+<main id="stage"><div id="wrap"><canvas id="canvas"></canvas></div></main>
+<div id="toast"></div>
+<script type="module" src="editor.js"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm test)",
+      "Bash(npm run build)",
+      "Bash(npm run typecheck)",
+      "Bash(npm run test:e2e)",
+      "Bash(npm run compare -- *)",
+      "Bash(npm run package)",
+      "Bash(npx vitest *)",
+      "Bash(npx tsc --noEmit *)",
+      "Bash(node scripts/build.mjs*)",
+      "Bash(node test-e2e/run.mjs *)"
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+.idea
+node_modules/
+dist/
+shotkit.zip
+test-e2e/output/
