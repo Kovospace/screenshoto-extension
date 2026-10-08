@@ -66,4 +66,17 @@ describe('KeyboardShortcuts', () => {
     expect(press('v')).toBe(false);
     expect(press('q', { ctrlKey: true })).toBe(false);
   });
+
+  it('ignores keys typed into a form field or an open dialog', () => {
+    document.body.innerHTML = '<input id="f"><dialog open><button id="b"></button></dialog>';
+    const typed = (target: Element, key: string) => {
+      const e = new KeyboardEvent('keydown', { key, cancelable: true, bubbles: true });
+      Object.defineProperty(e, 'target', { value: target });
+      shortcuts.onKeyDown(e);
+    };
+    typed(document.getElementById('f')!, 'r');
+    typed(document.getElementById('b')!, 'Delete');
+    typed(document.body, 'v');
+    expect(calls).toEqual(['tool select']);
+  });
 });

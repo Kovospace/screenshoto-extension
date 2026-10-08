@@ -6,11 +6,13 @@ import { IndexedDbCaptureRepository } from '../shared/persistence/IndexedDbCaptu
 import { DebouncedAutosaver } from './application/DebouncedAutosaver';
 import { Editor } from './application/Editor';
 import { ExportService } from './application/ExportService';
+import { SettingsService } from './application/SettingsService';
 import { hostOf } from './application/fileName';
 import { ShapeRegistry } from './domain/shapes/ShapeRegistry';
 import { BrowserClipboard } from './infrastructure/BrowserClipboard';
 import { CanvasImageExporter } from './infrastructure/CanvasImageExporter';
 import { ChromeDownloader } from './infrastructure/ChromeDownloader';
+import { ChromeStorageSettingsRepository } from './infrastructure/ChromeStorageSettingsRepository';
 import { loadCapture } from './infrastructure/loadCapture';
 import { PointerController } from './interaction/PointerController';
 import { AnnotationScene } from './model/AnnotationScene';
@@ -23,6 +25,7 @@ import { CanvasStage } from './ui/CanvasStage';
 import { DomEditorView } from './ui/DomEditorView';
 import { EditorDom } from './ui/EditorDom';
 import { KeyboardShortcuts } from './ui/KeyboardShortcuts';
+import { SettingsDialog } from './ui/SettingsDialog';
 import { TextAreaInputFactory } from './ui/TextAreaInputFactory';
 import { Toast } from './ui/Toast';
 import { Toolbar } from './ui/Toolbar';
@@ -35,6 +38,8 @@ async function start(): Promise<void> {
   const repository = new IndexedDbCaptureRepository();
   const session = await loadCapture(decodeURIComponent(location.hash.slice(1)), repository);
   const { capture } = session;
+  const settings = new SettingsService(new ChromeStorageSettingsRepository());
+  await settings.load();
 
   // All annotation geometry is in 1× (CSS pixel) units, so it renders identically at every scale.
   const state = new EditorState(session.initialScale());
@@ -45,12 +50,14 @@ async function start(): Promise<void> {
   const toolbar = new Toolbar(dom);
   const stage = new CanvasStage(dom, session, state, scene, renderer);
   const view = new DomEditorView(toolbar, stage, session, state);
+  const toast = new Toast(dom.toast);
   const exporter = new ExportService(
     capture,
     new CanvasImageExporter(session, () => scene.annotations, renderer),
     new ChromeDownloader(),
     new BrowserClipboard(),
-    new Toast(dom.toast),
+    toast,
+    () => settings.current,
   );
   const autosaver = new DebouncedAutosaver(repository, session.id,
     () => ({ annotations: scene.toArray(), lastScale: state.scale }));
@@ -71,6 +78,7 @@ async function start(): Promise<void> {
   view.layout();
   window.addEventListener('resize', () => view.layout());
 
+  new SettingsDialog(settings, session, state, toast).bind(dom.openSettings);
   bindCanvasPointer(dom.canvas, stage, new PointerController(editor));
   window.addEventListener('keydown', new KeyboardShortcuts(editor).onKeyDown);
 }

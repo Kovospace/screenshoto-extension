@@ -74,6 +74,10 @@ Rule inside `Editor` for every mutation: **record undo *before* changing → red
   injected with `executeScript({ files })`. Re-injected from the toolbar it toggles (cancels) an
   open picker; from the context menu the worker first sets `window.__screenshotoRequestedMode`
   and the picker opens in, or switches to, that mode (`launchPicker.ts`).
+- **Export settings live in `chrome.storage.sync` under `exportSettings`** (`{ folder, suffix }`);
+  invalid stored values fall back to defaults field by field (`sanitizeStoredSettings`).
+  `chrome.downloads` only writes inside Downloads, so `folder` is relative to it — absolute
+  paths are refused with an explanation, never silently nested.
 - **The IndexedDB name stays `shotkit`** (the extension's former name) — renaming orphans captures.
 - **Functions passed to `executeScript({ func })` are serialised**: no imports, no closures —
   see `ScriptingElementLocator.measurePickedElement`. Page globals are typed in
@@ -116,7 +120,9 @@ this way: all observations byte-identical.
 
 TypeScript strict, ES2022, `verbatimModuleSyntax` (use `import type`). Classes for things with
 behaviour or state, plain functions for pure helpers. PascalCase file per class/interface,
-camelCase for function modules. Comments say *why*; JSDoc on public members of ports and core
+camelCase for function modules. Class field initialisers run *before* constructor parameter
+properties are assigned (ES2022 fields) — anything that needs a constructor parameter is set in
+the constructor body. Comments say *why*; JSDoc on public members of ports and core
 classes. No new dependencies without asking.
 
 ## Where things are

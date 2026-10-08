@@ -6,13 +6,18 @@ const ARROWS: Readonly<Record<string, readonly [number, number]>> = {
   ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1],
 };
 
+/** Typing into a field (e.g. the settings dialog) must not trigger shortcuts. */
+function isFormField(target: EventTarget | null): boolean {
+  return target instanceof HTMLElement && (target.matches('input, textarea, select') || !!target.closest('dialog[open]'));
+}
+
 /** Window-level keyboard shortcuts of the editor (see the README's key table). Inactive while typing text. */
 export class KeyboardShortcuts {
   constructor(private readonly commands: EditorCommands) {}
 
   readonly onKeyDown = (e: KeyboardEvent): void => {
     const c = this.commands;
-    if (c.isEditingText()) return;
+    if (c.isEditingText() || isFormField(e.target)) return;
     const k = e.key, lk = k.toLowerCase();
 
     if (e.ctrlKey || e.metaKey) {

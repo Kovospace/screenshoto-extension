@@ -6,6 +6,7 @@ import type { TextAnnotation } from '../../shared/model/Annotation';
 import type { Scale } from '../../shared/model/Capture';
 import type { SizeKey } from '../config/editorConfig';
 import type { Cursor, ToolName } from '../domain/ToolName';
+import type { ExportSettings } from '../model/ExportSettings';
 
 /** Everything the editor shows. Passive: it never changes editor state itself. */
 export interface EditorView {
@@ -54,6 +55,15 @@ export interface ClipboardWriter {
 /** Renders the annotated image of one scale. */
 export interface ImageExporter {
   render(scale: Scale): Promise<Blob>;
+}
+
+/** Persistent storage of the export settings. */
+export interface SettingsRepository {
+  /** The stored settings, or defaults for anything not (validly) stored. */
+  load(): Promise<ExportSettings>;
+  save(settings: ExportSettings): Promise<void>;
+  /** Called when the settings change elsewhere (another editor tab, another synced browser). */
+  onExternalChange(listener: (settings: ExportSettings) => void): void;
 }
 
 export interface Autosaver {

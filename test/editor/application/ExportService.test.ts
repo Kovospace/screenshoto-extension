@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { ExportService } from '../../../src/editor/application/ExportService';
 import type { Capture } from '../../../src/shared/model/Capture';
+import { DEFAULT_EXPORT_SETTINGS, type ExportSettings } from '../../../src/editor/model/ExportSettings';
 
 const capture = { time: new Date(2026, 0, 2, 3, 4, 5).getTime(), url: 'https://www.example.com/x' } as Capture;
 
-function setup(download: (name: string, saveAs: boolean) => Promise<void> = async () => {}) {
+function setup(download: (name: string, saveAs: boolean) => Promise<void> = async () => {},
+               settings: ExportSettings = DEFAULT_EXPORT_SETTINGS) {
   const toasts: string[] = [];
   const downloads: Array<[string, boolean]> = [];
   const service = new ExportService(
@@ -13,6 +15,7 @@ function setup(download: (name: string, saveAs: boolean) => Promise<void> = asyn
     { download: async (_png, name, saveAs) => { downloads.push([name, saveAs]); await download(name, saveAs); } },
     { writePng: async png => { await png; } },
     { toast: m => toasts.push(m) },
+    () => settings,
   );
   return { service, toasts, downloads };
 }
@@ -50,8 +53,19 @@ describe('ExportService', () => {
 
     const toasts: string[] = [];
     const denied = new ExportService(capture, { render: async () => new Blob() }, { download: async () => {} },
-      { writePng: async () => { throw new Error('not allowed'); } }, { toast: m => toasts.push(m) });
+      { writePng: async () => { throw new Error('not allowed'); } }, { toast: m => toasts.push(m) }, () => DEFAULT_EXPORT_SETTINGS);
     await denied.copy(2);
     expect(toasts).toEqual(['Copy failed: not allowed']);
+  });
+
+  it('saves where the settings say, and says so', async () => {
+    const custom = setup(undefined, { folder: 'Shots', suffix: '_{n}' });
+    await custom.service.save([1, 2], false);
+    expect(custom.downloads.map(d => d[0])).toEqual(['Shots/www.example.com_2026-01-02_03-04-05_1.png', 'Shots/www.example.com_2026-01-02_03-04-05_2.png']);
+    expect(custom.toasts).toEqual(['Saved 2 files to Downloads/Shots']);
+
+    const root = setup(undefined, { folder: '', suffix: '@{n}x' });
+    await root.service.save([2], false);
+    expect(root.toasts).toEqual(['Saved 2× to Downloads']);
   });
 });

@@ -15,6 +15,9 @@ tracking. It makes no network requests at all.
 - **Captures and their annotations** are stored in your browser's local storage (IndexedDB)
   so you can reopen the editor. They are deleted automatically after 7 days, and also when you
   remove the extension.
+- **Your settings** (save folder and file name suffix) are kept in Chrome's extension storage.
+  If you use Chrome sync, Chrome syncs them to your other browsers through your Google account,
+  like any extension setting; they never reach the developer.
 - **Saved images** go to your own Downloads folder, and **copied images** to your clipboard,
   only when you choose Save or Copy.
 
@@ -28,6 +31,7 @@ None of this is ever sent to the developer or to anyone else.
   the screenshot of the area you selected. Nothing else is read from the page.
 - **downloads** — to save your images when you click Save.
 - **contextMenus** — to offer "Capture area" and "Capture element" on right-click.
+- **storage** — to remember your save folder and file name suffix.
 
 ## Contact
 

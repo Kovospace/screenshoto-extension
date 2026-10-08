@@ -12,6 +12,7 @@ export class EditorDom {
   readonly copy: HTMLButtonElement;
   readonly save: HTMLButtonElement;
   readonly saveAll: HTMLButtonElement;
+  readonly openSettings: HTMLButtonElement;
 
   constructor(private readonly doc: Document = document) {
     const $ = <T extends HTMLElement>(selector: string) => doc.querySelector<T>(selector)!;
@@ -27,6 +28,7 @@ export class EditorDom {
     this.copy = $('#copy');
     this.save = $('#save');
     this.saveAll = $('#saveAll');
+    this.openSettings = $('#openSettings');
   }
 
   /** Buttons carrying `data-<name>` (scale, tool, size, color); queried live, colour swatches are added later. */

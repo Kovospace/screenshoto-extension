@@ -34,7 +34,10 @@ Capture a region or an HTML element at **true** 1×, 2×, 3× and 4× resolution
 | Ctrl+C | Copy current scale |
 | Ctrl+S | Save current scale (Shift = choose location) |
 
-Files go to `Downloads/Screenshoto Web/<site>_<date>@2x.png`. **Save all** writes all four scales. Annotations are stored in 1× units, so they look identical at every scale.
+Files go to `Downloads/Screenshoto Web/<site>_<date>@2x.png`. **Save all** writes all four scales.
+The **⚙ Settings** button (top right) changes the folder inside Downloads (empty = Downloads
+itself; Chrome lets extensions save nowhere else) and the scale suffix, where `{n}` is the
+scale: `@{n}x` → `@2x`, `_{n}` → `_2`. Settings follow your Chrome profile. Annotations are stored in 1× units, so they look identical at every scale.
 
 ## How the "real" 2×–4× works
 

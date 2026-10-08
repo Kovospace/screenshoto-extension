@@ -1,5 +1,5 @@
 import type { Capture, Scale } from '../../shared/model/Capture';
-import { DOWNLOAD_FOLDER } from '../config/editorConfig';
+import { downloadLocation, type ExportSettings } from '../model/ExportSettings';
 import { exportFileName } from './fileName';
 import type { ClipboardWriter, Downloader, ImageExporter, Notifier } from './ports';
 
@@ -13,15 +13,18 @@ export class ExportService {
     private readonly downloader: Downloader,
     private readonly clipboard: ClipboardWriter,
     private readonly notifier: Notifier,
+    /** Read at each save, so a change in the settings applies immediately. */
+    private readonly settings: () => ExportSettings,
   ) {}
 
   /** Saves each scale as its own file. "Save as" only applies to a single file. */
   async save(scales: readonly Scale[], saveAs: boolean): Promise<void> {
+    const settings = this.settings();
     let saved = 0;
     for (const scale of scales) {
       const png = await this.images.render(scale);
       try {
-        await this.downloader.download(png, exportFileName(this.capture, scale), saveAs && scales.length === 1);
+        await this.downloader.download(png, exportFileName(this.capture, scale, settings), saveAs && scales.length === 1);
         saved++;
       } catch (e) {
         if (!/cancel/i.test((e as Error)?.message || '')) this.notifier.toast('Save failed: ' + message(e));
@@ -29,8 +32,8 @@ export class ExportService {
     }
     if (saved) {
       this.notifier.toast(saved === 1
-        ? `Saved ${scales[0]}× to Downloads/${DOWNLOAD_FOLDER}`
-        : `Saved ${saved} files to Downloads/${DOWNLOAD_FOLDER}`);
+        ? `Saved ${scales[0]}× to ${downloadLocation(settings)}`
+        : `Saved ${saved} files to ${downloadLocation(settings)}`);
     }
   }
 

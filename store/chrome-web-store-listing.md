@@ -89,6 +89,7 @@ ANNOTATE
 SAVE
 • Copy to the clipboard, or save as PNG – the current scale or all four at once
 • Files are named after the site and the time, in Downloads/Screenshoto Web
+• Settings: choose the folder inside Downloads and the scale suffix (@2x, _2, _2x …)
 • Captures stay in your browser for 7 days, so you can reopen the editor and carry on
 
 PRIVACY
@@ -153,6 +154,7 @@ Screenshoto Web captures a user-selected area or element of the current web page
 | `debugger` | `This is how the extension produces real high-resolution screenshots instead of upscaled ones. When the user confirms a selection, it attaches to that one tab for about a second, re-renders the page at device pixel ratios 1, 2, 3 and 4 (Emulation.setDeviceMetricsOverride), waits for images to load (Runtime.evaluate), captures only the selected rectangle (Page.captureScreenshot) and detaches, restoring the page. It is never attached without an explicit user action, never to another tab, and reads nothing except the requested image. Chrome's own "started debugging" notice is shown while it runs.` |
 | `downloads` | `Saves the annotated screenshots as PNG files to the user's Downloads folder when the user clicks Save, Save all or presses Ctrl+S.` |
 | `contextMenus` | `Adds "Capture area" and "Capture element" to the page's right-click menu, as another way to start a capture.` |
+| `storage` | `Remembers the user's two settings – the folder inside Downloads to save images to, and the file name suffix for the scale (e.g. "@2x" or "_2") – in chrome.storage.sync, so they apply in every editor tab and follow the user's Chrome profile.` |
 
 Host permissions: **none** requested.
 

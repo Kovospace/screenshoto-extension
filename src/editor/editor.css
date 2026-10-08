@@ -16,6 +16,7 @@ body {
 .group { display: flex; align-items: center; gap: 2px; }
 .sep { width: 1px; height: 24px; background: var(--line); }
 .spacer { flex: 1; }
+.export { margin-left: auto; } /* keeps Copy/Save and ⚙ at the right edge, also when the bar wraps */
 button {
   all: unset; display: inline-flex; align-items: center; justify-content: center; height: 32px; min-width: 32px;
   padding: 0 6px; border-radius: 7px; cursor: pointer; color: var(--fg);
@@ -66,3 +67,28 @@ canvas[data-cursor="default"] { cursor: default; }
 }
 #toast.show { opacity: 1; transform: translate(-50%, 0); }
 .fatal { color: var(--muted); font-size: 15px; padding: 40px; text-align: center; }
+
+#settings {
+  width: min(460px, calc(100vw - 32px)); padding: 0; border: 1px solid var(--line); border-radius: 12px;
+  background: var(--bar); color: var(--fg); box-shadow: 0 20px 60px rgba(0,0,0,.6);
+}
+#settings::backdrop { background: rgba(0,0,0,.55); }
+#settings form { padding: 20px 22px 18px; display: flex; flex-direction: column; }
+#settings h2 { margin: 0 0 16px; font-size: 16px; }
+#settings label { font-weight: 600; margin-bottom: 6px; }
+#settings .field {
+  display: flex; align-items: center; background: var(--stage); border: 1px solid var(--line); border-radius: 8px;
+  padding: 0 10px; height: 36px;
+}
+#settings .field:focus-within { border-color: var(--accent); }
+#settings .field.invalid { border-color: #dc2626; }
+#settings .prefix { color: var(--muted); white-space: nowrap; }
+#settings input { all: unset; flex: 1; min-width: 0; font: inherit; color: var(--fg); }
+#settings input::placeholder { color: var(--muted); }
+#settings .note { margin: 6px 0 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
+#settings .error { margin: 4px 0 12px; min-height: 16px; color: #f87171; font-size: 12px; }
+#settings code { font: 12px ui-monospace, monospace; background: var(--bar-2); padding: 1px 4px; border-radius: 4px; }
+#settings .preview-label { margin: 2px 0 4px; font-weight: 600; }
+#settings .preview { margin: 0; padding: 8px 10px; background: var(--stage); border-radius: 8px; color: var(--muted);
+  font: 12px/1.4 ui-monospace, monospace; word-break: break-all; }
+#settings .actions { display: flex; gap: 6px; margin-top: 18px; }

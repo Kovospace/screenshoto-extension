@@ -114,8 +114,8 @@ try {
     const round = v => v === undefined ? v : JSON.parse(JSON.stringify(v, (_, x) => typeof x === 'number' ? Math.round(x * 1000) / 1000 : x));
     return { images, failed: cap.failed, rect: round(cap.rect), url: cap.url, title: cap.title, annotations: round(cap.annotations), lastScale: cap.lastScale };
   });
-  const savedFiles = async (expected, timeout = 10000) => {
-    const dir = join(downloads, 'Screenshoto Web');
+  const savedFiles = async (expected, { timeout = 10000, folder = 'Screenshoto Web' } = {}) => {
+    const dir = join(downloads, ...folder.split('/'));
     for (const end = Date.now() + timeout; Date.now() < end; await sleep(100)) {
       const names = (await readdir(dir).catch(() => [])).filter(n => n.endsWith('.png'));
       if (names.length >= expected) {
@@ -314,6 +314,71 @@ try {
     const { toast } = await ui(editor);
     assert.match(toast, /^(Copied 3× image|Copy failed: .+)$/);
     return { toast: toast.startsWith('Copied') ? toast : 'Copy failed: …' };
+  });
+  await step('settings: Save all is the primary button; ⚙ opens the dialog with the defaults', async () => {
+    const primary = await editor.$eval('#saveAll', b => b.classList.contains('primary'));
+    const savePrimary = await editor.$eval('#save', b => b.classList.contains('primary'));
+    assert.deepEqual([primary, savePrimary], [true, false]);
+    await editor.click('#openSettings');
+    await editor.waitForSelector('#settings[open]');
+    const values = await editor.evaluate(() => [setFolder.value, setSuffix.value, setPreview.textContent]);
+    assert.deepEqual(values.slice(0, 2), ['Screenshoto Web', '@{n}x']);
+    assert.match(values[2], /^Downloads\/Screenshoto Web\/127\.0\.0\.1_\d{4}-\d\d-\d\d_\d\d-\d\d-\d\d@3x\.png$/);
+    return { defaults: values.slice(0, 2) };
+  });
+
+  const retype = async (selector, text) => {
+    await editor.click(selector, { clickCount: 1 });
+    await editor.keyboard.down('Control'); await editor.keyboard.press('a'); await editor.keyboard.up('Control');
+    await editor.keyboard.type(text);
+  };
+
+  await step('settings: invalid input is explained and cannot be saved; typing triggers no shortcuts', async () => {
+    await retype('#setFolder', '/home/me/Pictures');
+    await retype('#setSuffix', '_2x');
+    const state = await editor.evaluate(() => ({
+      folderError: setFolderError.textContent, suffixError: setSuffixError.textContent, saveDisabled: setSave.disabled,
+    }));
+    assert.match(state.folderError, /inside Downloads/);
+    assert.match(state.suffixError, /\{n\}/);
+    assert.equal(state.saveDisabled, true);
+    const { tool, scale } = await ui(editor); // "r", "e", "a"… and "2" were typed into the fields
+    assert.deepEqual([tool, scale], [['arrow'], ['3']]);
+    return state;
+  });
+
+  await step('settings: a new folder and suffix apply to the next save', async () => {
+    await retype('#setFolder', 'Shots\\Web');
+    await retype('#setSuffix', '_{n}x');
+    const preview = await editor.$eval('#setPreview', p => p.textContent);
+    assert.match(preview, /^Downloads\/Shots\/Web\/127\.0\.0\.1_.+_3x\.png$/);
+    await editor.click('#setSave');
+    await editor.waitForFunction(() => !document.querySelector('#settings[open]'));
+    assert.equal((await ui(editor)).toast, 'Settings saved');
+    await editor.keyboard.down('Control'); await editor.keyboard.press('s'); await editor.keyboard.up('Control');
+    const files = await savedFiles(1, { folder: 'Shots/Web' });
+    assert.deepEqual(Object.keys(files), ['<host_time>_3x.png']);
+    await editor.waitForFunction(() => document.querySelector('#toast').textContent.startsWith('Saved'));
+    assert.equal((await ui(editor)).toast, 'Saved 3× to Downloads/Shots/Web');
+    return { files };
+  });
+
+  await step('settings: survive reopening the editor; Cancel discards edits', async () => {
+    await editor.reload();
+    await editor.waitForFunction(() => /px · view/.test(document.querySelector('#info')?.textContent || ''));
+    await editor.click('#openSettings');
+    await editor.waitForSelector('#settings[open]');
+    const stored = await editor.evaluate(() => [setFolder.value, setSuffix.value]);
+    assert.deepEqual(stored, ['Shots/Web', '_{n}x']);
+    await retype('#setFolder', 'Other');
+    await editor.click('#setCancel');
+    await editor.click('#openSettings');
+    const afterCancel = await editor.$eval('#setFolder', i => i.value);
+    assert.equal(afterCancel, 'Shots/Web');
+    await editor.click('#setDefaults');
+    await editor.click('#setSave');
+    await editor.waitForFunction(() => !document.querySelector('#settings[open]'));
+    return { stored, afterCancel };
   });
   await editor?.close();
 

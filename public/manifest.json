@@ -4,7 +4,7 @@
   "version": "1.1.0",
   "description": "Capture a region or element at true 1×–4× retina resolution, annotate it, save it. Simple, fast and free.",
   "minimum_chrome_version": "116",
-  "permissions": ["activeTab", "scripting", "debugger", "downloads", "contextMenus"],
+  "permissions": ["activeTab", "scripting", "debugger", "downloads", "contextMenus", "storage"],
   "background": { "service_worker": "background.js", "type": "module" },
   "action": {
     "default_title": "Screenshoto Web — capture region or element (Alt+Shift+S)",

@@ -37,14 +37,37 @@
   </div>
   <div class="spacer"></div>
   <span id="info"></span>
-  <div class="group">
+  <div class="group export">
     <button id="copy" class="text" title="Copy current scale to clipboard (Ctrl+C)">Copy</button>
-    <button id="save" class="text primary" title="Save current scale (Ctrl+S) — Shift-click to choose location">Save</button>
-    <button id="saveAll" class="text" title="Save 1×, 2×, 3× and 4× files">Save all</button>
+    <button id="save" class="text" title="Save current scale (Ctrl+S) — Shift-click to choose location">Save</button>
+    <button id="saveAll" class="text primary" title="Save 1×, 2×, 3× and 4× files">Save all</button>
   </div>
+  <div class="sep"></div>
+  <button id="openSettings" title="Settings — save folder and file names"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></button>
 </header>
 <main id="stage"><div id="wrap"><canvas id="canvas"></canvas></div></main>
 <div id="toast"></div>
+<dialog id="settings">
+  <form id="settingsForm" method="dialog" novalidate>
+    <h2>Settings</h2>
+    <label for="setFolder">Save to folder</label>
+    <div class="field"><span class="prefix">Downloads/</span><input id="setFolder" name="folder" spellcheck="false" autocomplete="off" placeholder="(Downloads itself)"></div>
+    <p class="note">Chrome lets extensions save only inside your Downloads folder. Sub-folders like <code>Screenshots/Web</code> are fine. Shift-click <b>Save</b> to pick any location for one file.</p>
+    <p class="error" id="setFolderError"></p>
+    <label for="setSuffix">File name suffix</label>
+    <div class="field"><input id="setSuffix" name="suffix" spellcheck="false" autocomplete="off"></div>
+    <p class="note"><code>{n}</code> is the scale: <code>@{n}x</code> → <code>@2x</code>, <code>_{n}</code> → <code>_2</code>, <code>_{n}x</code> → <code>_2x</code></p>
+    <p class="error" id="setSuffixError"></p>
+    <p class="preview-label">Example</p>
+    <p class="preview" id="setPreview"></p>
+    <div class="actions">
+      <button type="button" id="setDefaults" class="text">Defaults</button>
+      <span class="spacer"></span>
+      <button type="button" id="setCancel" class="text">Cancel</button>
+      <button type="submit" id="setSave" class="text primary">Save</button>
+    </div>
+  </form>
+</dialog>
 <script type="module" src="editor.js"></script>
 </body>
 </html>

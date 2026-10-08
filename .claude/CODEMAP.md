@@ -53,7 +53,8 @@ them under `test/`. Every file is under ~210 lines: read whole files, no ranges 
 | All commands; undo/redraw/save/refresh choreography | `application/Editor.ts` (`EditorCommands.ts` = UI-facing interface) |
 | Port interfaces (view, text input, downloader, clipboard, exporter, autosaver) | `application/ports.ts` |
 | Save / Save all / Copy + toasts | `application/ExportService.ts` |
-| Download file name `Screenshoto Web/<host>_<time>@Nx.png` | `application/fileName.ts` |
+| Download file name `<folder>/<host>_<time><suffix>.png` | `application/fileName.ts` |
+| Export settings (folder in Downloads, `{n}` suffix): model + validation, service, chrome.storage.sync, ⚙ dialog | `model/ExportSettings.ts`, `application/SettingsService.ts`, `infrastructure/ChromeStorageSettingsRepository.ts`, `ui/SettingsDialog.ts` (markup in `editor.html`) |
 | Debounced write-back of annotations + last scale | `application/DebouncedAutosaver.ts` |
 | Text box commit/cancel/empty rules | `application/TextEditSession.ts` |
 | Shapes: draw, bounds, hit-test, handles, size | `domain/shapes/*Shape.ts`, `ShapeBehavior.ts`, `ShapeRegistry.ts` |
