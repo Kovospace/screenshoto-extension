@@ -1,11 +1,13 @@
 // Renders the store graphics that are generated rather than hand-made:
 //   materials/promo/small-promo-tile.png  (440×280, from small-promo-tile.html)
-//   materials/store-icon/icon-128.png      (the 128 px icon scaled to 96 px with 16 px transparent padding,
-//                                           as the Web Store icon guidelines ask)
+//   materials/store-icon/icon-{128,256,512}.png  (from icon.svg: artwork at 75 % with a transparent
+//                                           margin — 96 px + 16 px padding at 128, as the Web Store
+//                                           icon guidelines ask — scaled for 256 and 512)
 // Promo PNGs are flattened to 24-bit (no alpha) — the store rejects alpha in promo images.
 //
 //   node store/render-graphics.mjs
 import { execFileSync } from 'node:child_process';
+import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import puppeteer from 'puppeteer';
@@ -22,11 +24,19 @@ try {
   await page.screenshot({ path: png });
   execFileSync('convert', [png, '-background', '#000000', '-alpha', 'remove', '-alpha', 'off', `PNG24:${png}`]);
   console.log(`wrote ${png}`);
+
+  const iconDir = join(here, 'materials', 'store-icon');
+  const svg = await readFile(join(iconDir, 'icon.svg'), 'utf8');
+  for (const size of [128, 256, 512]) {
+    const art = size * 0.75;
+    await page.setViewport({ width: size, height: size, deviceScaleFactor: 1 });
+    await page.setContent(`<style>html,body{margin:0;background:transparent}
+      svg{display:block;width:${art}px;height:${art}px;margin:${(size - art) / 2}px}</style>${svg}`);
+    const out = join(iconDir, `icon-${size}.png`);
+    await page.screenshot({ path: out, omitBackground: true });
+    console.log(`wrote ${out}`);
+  }
 } finally {
   await browser.close();
 }
 
-const icon = join(here, 'materials', 'store-icon', 'icon-128.png');
-execFileSync('convert', [join(here, '..', 'public', 'icons', '128.png'), '-resize', '96x96',
-  '-background', 'none', '-gravity', 'center', '-extent', '128x128', `PNG32:${icon}`]);
-console.log(`wrote ${icon}`);

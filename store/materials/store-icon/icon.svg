@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Vector redraw of public/icons/128.png (geometry measured from its anti-aliased edges),
+       so the icon renders sharp at any size: node store/render-graphics.mjs -->
+  <rect width="128" height="128" rx="28" fill="#2563eb"/>
+  <g fill="#fff">
+    <path d="M25.5 25.5H53.75V37.15H37.15V53.75H25.5z"/>
+    <path d="M102.5 25.5H74.25V37.15H90.85V53.75H102.5z"/>
+    <path d="M25.5 102.5H53.75V90.85H37.15V74.25H25.5z"/>
+    <path d="M102.5 102.5H74.25V90.85H90.85V74.25H102.5z"/>
+    <circle cx="64.1" cy="64.1" r="14.05"/>
+  </g>
+</svg>

@@ -9,10 +9,10 @@ tab by tab, plus the publishing steps. English only: the extension's UI is Engli
 |---|---|
 | `chrome-web-store-listing.md` | this file |
 | `privacy-policy.md` | privacy policy to link from the Privacy tab |
-| `materials/store-icon/icon-128.png` | store icon (96 px artwork, 16 px transparent padding) |
+| `materials/store-icon/icon-128.png` | store icon (96 px artwork, 16 px transparent padding); also `icon-256.png`, `icon-512.png` (same layout, for other stores/sites); vector source `icon.svg` |
 | `materials/promo/small-promo-tile.png` | small promo tile 440×280, 24-bit; source `small-promo-tile.html` |
 | `materials/screenshots/1-5.png` | screenshots, 1280×800, 24-bit (made by hand; see section 1) |
-| `render-graphics.mjs` | re-renders the promo tile and store icon: `node store/render-graphics.mjs` |
+| `render-graphics.mjs` | re-renders the promo tile and the store icons: `node store/render-graphics.mjs` |
 | `screenshoto-web-<version>.zip` | the upload package (git-ignored): `npm run package:store` |
 
 ---
